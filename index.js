@@ -48,7 +48,7 @@ const nextQuestion = [
 
     const initialPrompt = async () => {
         let choice= await inquirer.prompt(question);
-        
+    
         if (choice.initial === 'View all departments'){
             allDepartmentQuery();
         }
@@ -60,6 +60,9 @@ const nextQuestion = [
         }
         else if (choice.initial === 'Add a department'){
             addDepartmentPrompt();
+        }
+        else if (choice.initial === 'Add a role'){
+            addRolePrompt();
         }
     };
 
@@ -101,6 +104,52 @@ const nextQuestion = [
         console.table(rows);
         nextPrompt();
     };
+    const addRolePrompt = async () => {
+        const [rows] = await db.promise().query('SELECT * FROM department');
+        let roleName = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'name',
+                message: 'What would you like to title the new role?'
+            },
+            {
+                type: 'input',
+                name: 'salary',
+                message: 'Enter a salary for this role'
+            },
+            {
+                type: 'list',
+                name: 'department',
+                message: 'Which department would you like to assign the role to?',
+                choices: [...rows]
+            }
+        ]);
+        addRoleQuery(roleName);
+        
+    };
+    const addRoleQuery = async (role) => {
+        const [rows] = await db.promise().query('SELECT * FROM department');
+        const departmentId = () => {
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i].name === role.department){
+                    return rows[i].id
+                }
+                
+            }
+        };
+        const deptId = departmentId();
+        db.query(`INSERT INTO role (title, salary, department_id) VALUES('${role.name}', ${role.salary}, ${deptId})`,(err)=>{
+            if (err){
+                console.log(err)
+            }
+            else{
+                console.log('Role successfully added!');
+                nextPrompt();
+            }
+        });
+        
+    };
+    
 
     const allEmployeeQuery = async () => {
         const [rows] = await db.promise().query('SELECT * FROM employee');
