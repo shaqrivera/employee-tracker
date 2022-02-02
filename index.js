@@ -2,17 +2,24 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const dotenv = require('dotenv').config();
 const cTable = require('console.table');
-const {allDepartmentQuery, allRoleQuery, allEmployeeQuery }= require('./src/queries.js');
 const { restoreDefaultPrompts } = require('inquirer');
+
 const db = mysql.createConnection(
-{
-    host: process.env.SQL_host,
-    user: process.env.SQL_user,
-    password: process.env.SQL_password,
-    database: process.env.SQL_db
-},
-console.log(`Connected to the ${process.env.SQL_db} database.`)
-)
+        {
+            host: process.env.SQL_host,
+            user: process.env.SQL_user,
+            password: process.env.SQL_password,
+            database: process.env.SQL_db
+        },
+        console.log(`Connected to the ${process.env.SQL_db} database.`)
+        );
+
+db.connect((err) => {
+    if (err) {
+        throw err;
+    }
+    initialPrompt();
+})
 
 const question = [
     {
@@ -36,29 +43,70 @@ const nextQuestion = [
     }
 ];
 
-const initialPrompt = async () => {
-   let choice= await inquirer.prompt(question);
     
-    if (choice.initial === 'View all departments'){
-         allDepartmentQuery();
-    }
-    else if (choice.initial === 'View all roles'){
-         allRoleQuery();
-    }
-    else if (choice.initial === 'View all employees'){
-         allEmployeeQuery();
-    }
+
+
+    const initialPrompt = async () => {
+        let choice= await inquirer.prompt(question);
+        
+        if (choice.initial === 'View all departments'){
+            allDepartmentQuery();
+        }
+        else if (choice.initial === 'View all roles'){
+            allRoleQuery();
+        }
+        else if (choice.initial === 'View all employees'){
+            allEmployeeQuery();
+        }
+        else if (choice.initial === 'Add a department'){
+            addDepartmentPrompt();
+        }
+    };
+
+    const nextPrompt = async () => {
+        let choice = await inquirer.prompt(nextQuestion);
+        if(choice.next === true){
+            initialPrompt();
+        }
+        else{
+            db.end();
+        }
+    };
+
+    const allDepartmentQuery = async () => {
+    const [rows] = await db.promise().query('SELECT * FROM department');
+    console.table(rows);
     nextPrompt();
-};
+    };
 
-const nextPrompt = async () => {
-    let choice = await inquirer.prompt(nextQuestion);
-    if(choice.next === true){
-        initialPrompt();
-    }
-    else{
-        process.exit();
-    }
-};
+    const addDepartmentPrompt = async () => {
+        let deptName = await inquirer.prompt([
+            {
+                type: 'input',
+                message: 'What would you like to name the new department?',
+                name: 'name'
 
-initialPrompt();
+            }
+        ]);
+        addDepartmentQuery(deptName.name)
+    }
+
+    const addDepartmentQuery = (name) => {
+    db.query(`INSERT INTO department (name) VALUES('${name}')`);
+    nextPrompt();
+    }
+
+    const allRoleQuery = async () => {
+        const [rows] = await db.promise().query('SELECT * FROM role');
+        console.table(rows);
+        nextPrompt();
+    };
+
+    const allEmployeeQuery = async () => {
+        const [rows] = await db.promise().query('SELECT * FROM employee');
+        console.table(rows);
+        nextPrompt();
+    };   
+
+
+
