@@ -81,7 +81,7 @@ const nextQuestion = [
     };
 
     const allDepartmentQuery = async () => {
-    const [rows] = await db.promise().query('SELECT * FROM department');
+    const [rows] = await db.promise().query('SELECT id as "Department ID", name as "Department Name" FROM department');
     console.table(rows);
     nextPrompt();
     };
@@ -104,7 +104,7 @@ const nextQuestion = [
     }
 
     const allRoleQuery = async () => {
-        const [rows] = await db.promise().query('SELECT * FROM role');
+        const [rows] = await db.promise().query('SELECT id as "Role ID", title as "Role Title", salary as "Salary", department_id as "Department ID" FROM role');
         console.table(rows);
         nextPrompt();
     };
@@ -171,7 +171,7 @@ const nextQuestion = [
     
 
     const allEmployeeQuery = async () => {
-        const [rows] = await db.promise().query('SELECT * FROM employee');
+        const [rows] = await db.promise().query('SELECT id as "Employee ID", first_name as "First Name", last_name as "Last Name", role_id as "Role ID", manager_id as "Manager ID" FROM employee');
         console.table(rows);
         nextPrompt();
     };   
