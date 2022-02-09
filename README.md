@@ -17,7 +17,15 @@ A simple node.js application utilizing inquirer.js and mysql2.js to keep track o
 
 ## Installation
 
-First install Node.js <a href="https://nodejs.org/en/download/" target="_blank">Link to install Node.js</a> Finally, install required dependencies using 'npm i'. That's it! You're all set to run Who Works for Who.
+First install Node.js, and MySQL (<a href="https://nodejs.org/en/download/" target="_blank">Link to install Node.js</a>) (<a href="https://www.mysql.com/downloads/" target="_blank">Link to install MySQL</a>) Install the required dependencies using 'npm i'. Next, you must run the schema.sql file in order to create the database. In the root directory of the repository, use the following two commands in order (The second command may be omitted if test seeds are not desired.) :
+
+First command: `source ./db/schema.sql;`
+
+Second command (optional seeds): `source ./db/seeds.sql;`
+
+You must also rename the file named 'variables.env' to '.env'. Inside that file, you must insert your MySQL user name into the variable 'SQL_user'. You must also insert your MySQL password into the variable SQL_password. Ensure that 'localhost' is the correct MySQL host name for your environment.
+
+That's it! You're all set to run Who Works for Who.
 
 ## Usage
 
