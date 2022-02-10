@@ -33,7 +33,7 @@ Once the required dependencies are installed, simply use the terminal command 'n
 
 ## Contributing
 
-Anybody can use this generator, and modify it.
+Anybody can use this application, and modify it.
 
 ## Tests
 
